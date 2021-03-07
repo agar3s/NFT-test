@@ -1,5 +1,9 @@
-# pirates
+# Pirates
 NFT test, smart contracts are deployed in the Ropsten testnet network of Ethereum
+
+Nuxt simple Website inside pirateNFT
+
+Smart contracts in contracts directory
 ## Use(Sorry I uploaded node modules....)
 * Install metamask extension in the browser
   * Create and account and change network to Ropsten
