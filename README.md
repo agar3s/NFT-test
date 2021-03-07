@@ -1,16 +1,23 @@
 # pirates
-non fungible tokens
-## Use
-install ganache-cli
-install truffle
-compile the contracts and migrate
+NFT test, smart contracts are deployed in the Ropsten testnet network of Ethereum
+## Use(Sorry I uploaded node modules....)
+* Install metamask extension in the browser
+  * Create and account and change network to Ropsten
+  * https://faucet.ropsten.be/ use this faucet to get come testnet ETH
+* Run yarn dev...it will ask you to connect to your metamask extension when you open the website
+* Once the site is up you can create some pirates...The only functions working(interacting with the smart contract are Create pirate and list pirates...)
 
-You need to change in the index.html the address of the smart contract and the abi if were made any changes, the abi
-can be found in build contracts pirateownership.json
 
-Finally open the index.html in your browser and enjoy....
 
-## Future work to improve the game and build a whole ecosystem:
+
+
+
+
+
+
+
+
+## Future work to improve the game and build a whole ecosystem: I was just testing with this...Just for me.....
 – Create another unfungible token pets to interact with pirates…
 – Create a token that act as money for pirates to pay for ransoms and steal from another pirates once in fight…the losers pirates will see decreased its treasure
 – Posibility to create a crew with a captain, to attack another crew and distribute the lot
