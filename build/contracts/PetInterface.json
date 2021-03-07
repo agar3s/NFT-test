@@ -1,0 +1,3542 @@
+{
+  "contractName": "PetInterface",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "kidnap",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "isReady",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "cooldownIndex",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "nextActionAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "birthTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "generation",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "genes",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.17+commit.d19bba13\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"}],\"name\":\"kidnap\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"isReady\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"cooldownIndex\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nextActionAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"birthTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"generation\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"genes\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/freeman/Desktop/testto/contracts/piratefeeding.sol\":\"PetInterface\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/freeman/Desktop/testto/contracts/ownable.sol\":{\"keccak256\":\"0xed0a0cae3eeb763cf4c2b8f57069f8f1f2e12882e8dbdabf4998c8f3d363a09a\",\"urls\":[\"bzz-raw://b5d623c4b8c3dfd0009f4794c9665673aa397b9f7908f6f9cf460c11b6ae8b8a\",\"dweb:/ipfs/QmXLQF3p1TEQ7SEtYNGemerCqR9cJG1PYJ2fpdfTCuFjeC\"]},\"/home/freeman/Desktop/testto/contracts/piratefactory.sol\":{\"keccak256\":\"0xf4c49362843a327dcccd4402a6ee8abb154b57c2d1779e89c2aab341146a6695\",\"urls\":[\"bzz-raw://23a0475381db5f2fccca6a9b04f0d5ae212cefb4dbb988a9f57e1c862d6509dd\",\"dweb:/ipfs/QmZxHwzSLvHbMRu6dA6Jw7Pp6HF2NGFz9oYiC9seX6hUdK\"]},\"/home/freeman/Desktop/testto/contracts/piratefeeding.sol\":{\"keccak256\":\"0x2a78906fbdf7cc3fbf2056bec1ce44999454b426a5d24b1ad0c994ed0549920c\",\"urls\":[\"bzz-raw://d52c13eb8c60ab08a8afbf96f2dcd62fa4153cf6065bb9fab50d4bf3493060a3\",\"dweb:/ipfs/QmdV7fatKSQXkQujnxCtc8YGos7wcs4DkLPjPAqEakdiz1\"]},\"/home/freeman/Desktop/testto/contracts/safemath.sol\":{\"keccak256\":\"0xe6170983c92d9090962ecd653911c3776ad540ac305f9e8e808ea24171d71a4d\",\"urls\":[\"bzz-raw://c39ce07ee0bc9417c949d35903c05b2aa949d83207171a2d11e63f3219f13d53\",\"dweb:/ipfs/QmXWi3d9sHroSwvmf3ektu57UaHFTzcnb7b65F12NVMqpp\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity >=0.4.20;\n\nimport \"./piratefactory.sol\";\n\ncontract PetInterface {\n  //delete view\n  function kidnap(uint256 _id) external view returns (\n    bool isReady,\n    uint256 cooldownIndex,\n    uint256 nextActionAt,\n    uint256 birthTime,\n    uint256 generation,\n    uint256 genes\n  );\n}\n\ncontract PirateFeeding is PirateFactory {\n\n  PetInterface petContract;\n\n  modifier onlyOwnerOf(uint _pirateId) {\n    require(msg.sender == pirateToOwner[_pirateId]);\n    _;\n  }\n\n  function setPetContractAddress(address _address) external onlyOwner {\n    petContract = PetInterface(_address);\n  }\n\n  function _triggerCooldown(Pirate storage _pirate) internal {\n    _pirate.readyTime = uint32(now + cooldownTime);\n  }\n\n  function _isReady(Pirate storage _pirate) internal view returns (bool) {\n      return (_pirate.readyTime <= now);\n  }\n//it would be great to set a function to kidnap pirate's pets---kidnap kitties would be a great stealPirate\n//obviuosly without any real effect so it could be designed another fungible tokens to be pirates pets\n//that could be kidnaped and ask a ransom for them\n//it could then  been designed a token for the game to steal from pirates and to pay ransoms\n  function stealPirate(uint _pirateId, uint _pirateIdEnemy, string memory typeAttack) internal onlyOwnerOf(_pirateId) {\n    Pirate storage myPirate = pirates[_pirateId];\n    require(_isReady(myPirate));\n    \n    \n    /*if (keccak256(_species) == keccak256(\"attack\")) {\n      \n    }*/\n    _triggerCooldown(myPirate);\n  }\n\n  function _kiddnapPet(uint _pirateId, uint _kittyId) internal {\n    uint petDna;\n    (,,,,,petDna) = petContract.kidnap(_kittyId);\n  }\n}\n\n",
+  "sourcePath": "/home/freeman/Desktop/testto/contracts/piratefeeding.sol",
+  "ast": {
+    "absolutePath": "/home/freeman/Desktop/testto/contracts/piratefeeding.sol",
+    "exportedSymbols": {
+      "PetInterface": [
+        395
+      ],
+      "PirateFeeding": [
+        507
+      ]
+    },
+    "id": 508,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 376,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".20"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:25:3"
+      },
+      {
+        "absolutePath": "/home/freeman/Desktop/testto/contracts/piratefactory.sol",
+        "file": "./piratefactory.sol",
+        "id": 377,
+        "nodeType": "ImportDirective",
+        "scope": 508,
+        "sourceUnit": 375,
+        "src": "27:29:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 395,
+        "linearizedBaseContracts": [
+          395
+        ],
+        "name": "PetInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "id": 394,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "kidnap",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 380,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 379,
+                  "name": "_id",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 394,
+                  "src": "116:11:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 378,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "116:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "115:13:3"
+            },
+            "returnParameters": {
+              "id": 393,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 382,
+                  "name": "isReady",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 394,
+                  "src": "157:12:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 381,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "157:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 384,
+                  "name": "cooldownIndex",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 394,
+                  "src": "175:21:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 383,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "175:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 386,
+                  "name": "nextActionAt",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 394,
+                  "src": "202:20:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 385,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "202:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 388,
+                  "name": "birthTime",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 394,
+                  "src": "228:17:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 387,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "228:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 390,
+                  "name": "generation",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 394,
+                  "src": "251:18:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 389,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "251:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 392,
+                  "name": "genes",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 394,
+                  "src": "275:13:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 391,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "275:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "151:141:3"
+            },
+            "scope": 395,
+            "src": "100:193:3",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 508,
+        "src": "58:237:3"
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 396,
+              "name": "PirateFactory",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 374,
+              "src": "323:13:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_PirateFactory_$374",
+                "typeString": "contract PirateFactory"
+              }
+            },
+            "id": 397,
+            "nodeType": "InheritanceSpecifier",
+            "src": "323:13:3"
+          }
+        ],
+        "contractDependencies": [
+          55,
+          374
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 507,
+        "linearizedBaseContracts": [
+          507,
+          374,
+          55
+        ],
+        "name": "PirateFeeding",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 399,
+            "name": "petContract",
+            "nodeType": "VariableDeclaration",
+            "scope": 507,
+            "src": "342:24:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_PetInterface_$395",
+              "typeString": "contract PetInterface"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 398,
+              "name": "PetInterface",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 395,
+              "src": "342:12:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_PetInterface_$395",
+                "typeString": "contract PetInterface"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 413,
+              "nodeType": "Block",
+              "src": "408:65:3",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "commonType": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "id": 409,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "argumentTypes": null,
+                          "expression": {
+                            "argumentTypes": null,
+                            "id": 404,
+                            "name": "msg",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 947,
+                            "src": "422:3:3",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_message",
+                              "typeString": "msg"
+                            }
+                          },
+                          "id": 405,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "sender",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": null,
+                          "src": "422:10:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address_payable",
+                            "typeString": "address payable"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "==",
+                        "rightExpression": {
+                          "argumentTypes": null,
+                          "baseExpression": {
+                            "argumentTypes": null,
+                            "id": 406,
+                            "name": "pirateToOwner",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 223,
+                            "src": "436:13:3",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_mapping$_t_uint256_$_t_address_$",
+                              "typeString": "mapping(uint256 => address)"
+                            }
+                          },
+                          "id": 408,
+                          "indexExpression": {
+                            "argumentTypes": null,
+                            "id": 407,
+                            "name": "_pirateId",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 401,
+                            "src": "450:9:3",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          "isConstant": false,
+                          "isLValue": true,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "nodeType": "IndexAccess",
+                          "src": "436:24:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "src": "422:38:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      ],
+                      "id": 403,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        950,
+                        951
+                      ],
+                      "referencedDeclaration": 950,
+                      "src": "414:7:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
+                        "typeString": "function (bool) pure"
+                      }
+                    },
+                    "id": 410,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "414:47:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 411,
+                  "nodeType": "ExpressionStatement",
+                  "src": "414:47:3"
+                },
+                {
+                  "id": 412,
+                  "nodeType": "PlaceholderStatement",
+                  "src": "467:1:3"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 414,
+            "name": "onlyOwnerOf",
+            "nodeType": "ModifierDefinition",
+            "parameters": {
+              "id": 402,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 401,
+                  "name": "_pirateId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 414,
+                  "src": "392:14:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 400,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "392:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "391:16:3"
+            },
+            "src": "371:102:3",
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 427,
+              "nodeType": "Block",
+              "src": "545:47:3",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 425,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 421,
+                      "name": "petContract",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 399,
+                      "src": "551:11:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_PetInterface_$395",
+                        "typeString": "contract PetInterface"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 423,
+                          "name": "_address",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 416,
+                          "src": "578:8:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        ],
+                        "id": 422,
+                        "name": "PetInterface",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 395,
+                        "src": "565:12:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_PetInterface_$395_$",
+                          "typeString": "type(contract PetInterface)"
+                        }
+                      },
+                      "id": 424,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "565:22:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_PetInterface_$395",
+                        "typeString": "contract PetInterface"
+                      }
+                    },
+                    "src": "551:36:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_PetInterface_$395",
+                      "typeString": "contract PetInterface"
+                    }
+                  },
+                  "id": 426,
+                  "nodeType": "ExpressionStatement",
+                  "src": "551:36:3"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 428,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "arguments": null,
+                "id": 419,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 418,
+                  "name": "onlyOwner",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 29,
+                  "src": "535:9:3",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_modifier$__$",
+                    "typeString": "modifier ()"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "535:9:3"
+              }
+            ],
+            "name": "setPetContractAddress",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 417,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 416,
+                  "name": "_address",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 428,
+                  "src": "508:16:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 415,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "508:7:3",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "507:18:3"
+            },
+            "returnParameters": {
+              "id": 420,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "545:0:3"
+            },
+            "scope": 507,
+            "src": "477:115:3",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 443,
+              "nodeType": "Block",
+              "src": "655:57:3",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 441,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 433,
+                        "name": "_pirate",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 430,
+                        "src": "661:7:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                          "typeString": "struct PirateFactory.Pirate storage pointer"
+                        }
+                      },
+                      "id": 435,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberName": "readyTime",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 211,
+                      "src": "661:17:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint32",
+                        "typeString": "uint32"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "commonType": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          "id": 439,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "leftExpression": {
+                            "argumentTypes": null,
+                            "id": 437,
+                            "name": "now",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 949,
+                            "src": "688:3:3",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          "nodeType": "BinaryOperation",
+                          "operator": "+",
+                          "rightExpression": {
+                            "argumentTypes": null,
+                            "id": 438,
+                            "name": "cooldownTime",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 203,
+                            "src": "694:12:3",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          "src": "688:18:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        ],
+                        "id": 436,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "nodeType": "ElementaryTypeNameExpression",
+                        "src": "681:6:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_uint32_$",
+                          "typeString": "type(uint32)"
+                        },
+                        "typeName": "uint32"
+                      },
+                      "id": 440,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "681:26:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint32",
+                        "typeString": "uint32"
+                      }
+                    },
+                    "src": "661:46:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "id": 442,
+                  "nodeType": "ExpressionStatement",
+                  "src": "661:46:3"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 444,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "_triggerCooldown",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 431,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 430,
+                  "name": "_pirate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 444,
+                  "src": "622:22:3",
+                  "stateVariable": false,
+                  "storageLocation": "storage",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                    "typeString": "struct PirateFactory.Pirate"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 429,
+                    "name": "Pirate",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 216,
+                    "src": "622:6:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                      "typeString": "struct PirateFactory.Pirate"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "621:24:3"
+            },
+            "returnParameters": {
+              "id": 432,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "655:0:3"
+            },
+            "scope": 507,
+            "src": "596:116:3",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 457,
+              "nodeType": "Block",
+              "src": "787:46:3",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "components": [
+                      {
+                        "argumentTypes": null,
+                        "commonType": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "id": 454,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "argumentTypes": null,
+                          "expression": {
+                            "argumentTypes": null,
+                            "id": 451,
+                            "name": "_pirate",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 446,
+                            "src": "803:7:3",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                              "typeString": "struct PirateFactory.Pirate storage pointer"
+                            }
+                          },
+                          "id": 452,
+                          "isConstant": false,
+                          "isLValue": true,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "readyTime",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": 211,
+                          "src": "803:17:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint32",
+                            "typeString": "uint32"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "<=",
+                        "rightExpression": {
+                          "argumentTypes": null,
+                          "id": 453,
+                          "name": "now",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 949,
+                          "src": "824:3:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "src": "803:24:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      }
+                    ],
+                    "id": 455,
+                    "isConstant": false,
+                    "isInlineArray": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "TupleExpression",
+                    "src": "802:26:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "functionReturnParameters": 450,
+                  "id": 456,
+                  "nodeType": "Return",
+                  "src": "795:33:3"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 458,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "_isReady",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 447,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 446,
+                  "name": "_pirate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 458,
+                  "src": "734:22:3",
+                  "stateVariable": false,
+                  "storageLocation": "storage",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                    "typeString": "struct PirateFactory.Pirate"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 445,
+                    "name": "Pirate",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 216,
+                    "src": "734:6:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                      "typeString": "struct PirateFactory.Pirate"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "733:24:3"
+            },
+            "returnParameters": {
+              "id": 450,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 449,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 458,
+                  "src": "781:4:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 448,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "781:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "780:6:3"
+            },
+            "scope": 507,
+            "src": "716:117:3",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 486,
+              "nodeType": "Block",
+              "src": "1307:201:3",
+              "statements": [
+                {
+                  "assignments": [
+                    471
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 471,
+                      "name": "myPirate",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 486,
+                      "src": "1313:23:3",
+                      "stateVariable": false,
+                      "storageLocation": "storage",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                        "typeString": "struct PirateFactory.Pirate"
+                      },
+                      "typeName": {
+                        "contractScope": null,
+                        "id": 470,
+                        "name": "Pirate",
+                        "nodeType": "UserDefinedTypeName",
+                        "referencedDeclaration": 216,
+                        "src": "1313:6:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                          "typeString": "struct PirateFactory.Pirate"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 475,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "baseExpression": {
+                      "argumentTypes": null,
+                      "id": 472,
+                      "name": "pirates",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 219,
+                      "src": "1339:7:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_array$_t_struct$_Pirate_$216_storage_$dyn_storage",
+                        "typeString": "struct PirateFactory.Pirate storage ref[] storage ref"
+                      }
+                    },
+                    "id": 474,
+                    "indexExpression": {
+                      "argumentTypes": null,
+                      "id": 473,
+                      "name": "_pirateId",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 460,
+                      "src": "1347:9:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "IndexAccess",
+                    "src": "1339:18:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Pirate_$216_storage",
+                      "typeString": "struct PirateFactory.Pirate storage ref"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1313:44:3"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "id": 478,
+                            "name": "myPirate",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 471,
+                            "src": "1380:8:3",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                              "typeString": "struct PirateFactory.Pirate storage pointer"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                              "typeString": "struct PirateFactory.Pirate storage pointer"
+                            }
+                          ],
+                          "id": 477,
+                          "name": "_isReady",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 458,
+                          "src": "1371:8:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_internal_view$_t_struct$_Pirate_$216_storage_ptr_$returns$_t_bool_$",
+                            "typeString": "function (struct PirateFactory.Pirate storage pointer) view returns (bool)"
+                          }
+                        },
+                        "id": 479,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "1371:18:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      ],
+                      "id": 476,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        950,
+                        951
+                      ],
+                      "referencedDeclaration": 950,
+                      "src": "1363:7:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
+                        "typeString": "function (bool) pure"
+                      }
+                    },
+                    "id": 480,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1363:27:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 481,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1363:27:3"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 483,
+                        "name": "myPirate",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 471,
+                        "src": "1494:8:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                          "typeString": "struct PirateFactory.Pirate storage pointer"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                          "typeString": "struct PirateFactory.Pirate storage pointer"
+                        }
+                      ],
+                      "id": 482,
+                      "name": "_triggerCooldown",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 444,
+                      "src": "1477:16:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_Pirate_$216_storage_ptr_$returns$__$",
+                        "typeString": "function (struct PirateFactory.Pirate storage pointer)"
+                      }
+                    },
+                    "id": 484,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1477:26:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 485,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1477:26:3"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 487,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "arguments": [
+                  {
+                    "argumentTypes": null,
+                    "id": 467,
+                    "name": "_pirateId",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 460,
+                    "src": "1296:9:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  }
+                ],
+                "id": 468,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 466,
+                  "name": "onlyOwnerOf",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 414,
+                  "src": "1284:11:3",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_modifier$_t_uint256_$",
+                    "typeString": "modifier (uint256)"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "1284:22:3"
+              }
+            ],
+            "name": "stealPirate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 465,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 460,
+                  "name": "_pirateId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 487,
+                  "src": "1212:14:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 459,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1212:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 462,
+                  "name": "_pirateIdEnemy",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 487,
+                  "src": "1228:19:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 461,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1228:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 464,
+                  "name": "typeAttack",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 487,
+                  "src": "1249:24:3",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 463,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1249:6:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1211:63:3"
+            },
+            "returnParameters": {
+              "id": 469,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1307:0:3"
+            },
+            "scope": 507,
+            "src": "1191:317:3",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 505,
+              "nodeType": "Block",
+              "src": "1573:72:3",
+              "statements": [
+                {
+                  "assignments": [
+                    495
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 495,
+                      "name": "petDna",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 505,
+                      "src": "1579:11:3",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "typeName": {
+                        "id": 494,
+                        "name": "uint",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "1579:4:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 496,
+                  "initialValue": null,
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1579:11:3"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 503,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "components": [
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        {
+                          "argumentTypes": null,
+                          "id": 497,
+                          "name": "petDna",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 495,
+                          "src": "1602:6:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "id": 498,
+                      "isConstant": false,
+                      "isInlineArray": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "nodeType": "TupleExpression",
+                      "src": "1596:13:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_tuple$__$__$__$__$__$_t_uint256_$",
+                        "typeString": "tuple(,,,,,uint256)"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 501,
+                          "name": "_kittyId",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 491,
+                          "src": "1631:8:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 499,
+                          "name": "petContract",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 399,
+                          "src": "1612:11:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_PetInterface_$395",
+                            "typeString": "contract PetInterface"
+                          }
+                        },
+                        "id": 500,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "kidnap",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 394,
+                        "src": "1612:18:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_external_view$_t_uint256_$returns$_t_bool_$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$",
+                          "typeString": "function (uint256) view external returns (bool,uint256,uint256,uint256,uint256,uint256)"
+                        }
+                      },
+                      "id": 502,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1612:28:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_tuple$_t_bool_$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$",
+                        "typeString": "tuple(bool,uint256,uint256,uint256,uint256,uint256)"
+                      }
+                    },
+                    "src": "1596:44:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 504,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1596:44:3"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 506,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "_kiddnapPet",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 492,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 489,
+                  "name": "_pirateId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 506,
+                  "src": "1533:14:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 488,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1533:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 491,
+                  "name": "_kittyId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 506,
+                  "src": "1549:13:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 490,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1549:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1532:31:3"
+            },
+            "returnParameters": {
+              "id": 493,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1573:0:3"
+            },
+            "scope": 507,
+            "src": "1512:133:3",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 508,
+        "src": "297:1350:3"
+      }
+    ],
+    "src": "0:1649:3"
+  },
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "/home/freeman/Desktop/testto/contracts/piratefeeding.sol",
+      "exportedSymbols": {
+        "PetInterface": [
+          395
+        ],
+        "PirateFeeding": [
+          507
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            ">=",
+            "0.4",
+            ".20"
+          ]
+        },
+        "id": 376,
+        "name": "PragmaDirective",
+        "src": "0:25:3"
+      },
+      {
+        "attributes": {
+          "SourceUnit": 375,
+          "absolutePath": "/home/freeman/Desktop/testto/contracts/piratefactory.sol",
+          "file": "./piratefactory.sol",
+          "scope": 508,
+          "symbolAliases": [
+            null
+          ],
+          "unitAlias": ""
+        },
+        "id": 377,
+        "name": "ImportDirective",
+        "src": "27:29:3"
+      },
+      {
+        "attributes": {
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "contract",
+          "documentation": null,
+          "fullyImplemented": false,
+          "linearizedBaseContracts": [
+            395
+          ],
+          "name": "PetInterface",
+          "scope": 508
+        },
+        "children": [
+          {
+            "attributes": {
+              "body": null,
+              "documentation": null,
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "kidnap",
+              "scope": 395,
+              "stateMutability": "view",
+              "superFunction": null,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_id",
+                      "scope": 394,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 378,
+                        "name": "ElementaryTypeName",
+                        "src": "116:7:3"
+                      }
+                    ],
+                    "id": 379,
+                    "name": "VariableDeclaration",
+                    "src": "116:11:3"
+                  }
+                ],
+                "id": 380,
+                "name": "ParameterList",
+                "src": "115:13:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "isReady",
+                      "scope": 394,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bool",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bool",
+                          "type": "bool"
+                        },
+                        "id": 381,
+                        "name": "ElementaryTypeName",
+                        "src": "157:4:3"
+                      }
+                    ],
+                    "id": 382,
+                    "name": "VariableDeclaration",
+                    "src": "157:12:3"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "cooldownIndex",
+                      "scope": 394,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 383,
+                        "name": "ElementaryTypeName",
+                        "src": "175:7:3"
+                      }
+                    ],
+                    "id": 384,
+                    "name": "VariableDeclaration",
+                    "src": "175:21:3"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "nextActionAt",
+                      "scope": 394,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 385,
+                        "name": "ElementaryTypeName",
+                        "src": "202:7:3"
+                      }
+                    ],
+                    "id": 386,
+                    "name": "VariableDeclaration",
+                    "src": "202:20:3"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "birthTime",
+                      "scope": 394,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 387,
+                        "name": "ElementaryTypeName",
+                        "src": "228:7:3"
+                      }
+                    ],
+                    "id": 388,
+                    "name": "VariableDeclaration",
+                    "src": "228:17:3"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "generation",
+                      "scope": 394,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 389,
+                        "name": "ElementaryTypeName",
+                        "src": "251:7:3"
+                      }
+                    ],
+                    "id": 390,
+                    "name": "VariableDeclaration",
+                    "src": "251:18:3"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "genes",
+                      "scope": 394,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 391,
+                        "name": "ElementaryTypeName",
+                        "src": "275:7:3"
+                      }
+                    ],
+                    "id": 392,
+                    "name": "VariableDeclaration",
+                    "src": "275:13:3"
+                  }
+                ],
+                "id": 393,
+                "name": "ParameterList",
+                "src": "151:141:3"
+              }
+            ],
+            "id": 394,
+            "name": "FunctionDefinition",
+            "src": "100:193:3"
+          }
+        ],
+        "id": 395,
+        "name": "ContractDefinition",
+        "src": "58:237:3"
+      },
+      {
+        "attributes": {
+          "contractDependencies": [
+            55,
+            374
+          ],
+          "contractKind": "contract",
+          "documentation": null,
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [
+            507,
+            374,
+            55
+          ],
+          "name": "PirateFeeding",
+          "scope": 508
+        },
+        "children": [
+          {
+            "attributes": {
+              "arguments": null
+            },
+            "children": [
+              {
+                "attributes": {
+                  "contractScope": null,
+                  "name": "PirateFactory",
+                  "referencedDeclaration": 374,
+                  "type": "contract PirateFactory"
+                },
+                "id": 396,
+                "name": "UserDefinedTypeName",
+                "src": "323:13:3"
+              }
+            ],
+            "id": 397,
+            "name": "InheritanceSpecifier",
+            "src": "323:13:3"
+          },
+          {
+            "attributes": {
+              "constant": false,
+              "name": "petContract",
+              "scope": 507,
+              "stateVariable": true,
+              "storageLocation": "default",
+              "type": "contract PetInterface",
+              "value": null,
+              "visibility": "internal"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "contractScope": null,
+                  "name": "PetInterface",
+                  "referencedDeclaration": 395,
+                  "type": "contract PetInterface"
+                },
+                "id": 398,
+                "name": "UserDefinedTypeName",
+                "src": "342:12:3"
+              }
+            ],
+            "id": 399,
+            "name": "VariableDeclaration",
+            "src": "342:24:3"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "name": "onlyOwnerOf",
+              "visibility": "internal"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_pirateId",
+                      "scope": 414,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint",
+                          "type": "uint256"
+                        },
+                        "id": 400,
+                        "name": "ElementaryTypeName",
+                        "src": "392:4:3"
+                      }
+                    ],
+                    "id": 401,
+                    "name": "VariableDeclaration",
+                    "src": "392:14:3"
+                  }
+                ],
+                "id": 402,
+                "name": "ParameterList",
+                "src": "391:16:3"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "isStructConstructorCall": false,
+                          "lValueRequested": false,
+                          "names": [
+                            null
+                          ],
+                          "type": "tuple()",
+                          "type_conversion": false
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_bool",
+                                  "typeString": "bool"
+                                }
+                              ],
+                              "overloadedDeclarations": [
+                                950,
+                                951
+                              ],
+                              "referencedDeclaration": 950,
+                              "type": "function (bool) pure",
+                              "value": "require"
+                            },
+                            "id": 403,
+                            "name": "Identifier",
+                            "src": "414:7:3"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "commonType": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              },
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "operator": "==",
+                              "type": "bool"
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "member_name": "sender",
+                                  "referencedDeclaration": null,
+                                  "type": "address payable"
+                                },
+                                "children": [
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": null,
+                                      "overloadedDeclarations": [
+                                        null
+                                      ],
+                                      "referencedDeclaration": 947,
+                                      "type": "msg",
+                                      "value": "msg"
+                                    },
+                                    "id": 404,
+                                    "name": "Identifier",
+                                    "src": "422:3:3"
+                                  }
+                                ],
+                                "id": 405,
+                                "name": "MemberAccess",
+                                "src": "422:10:3"
+                              },
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "isConstant": false,
+                                  "isLValue": true,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "type": "address"
+                                },
+                                "children": [
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": null,
+                                      "overloadedDeclarations": [
+                                        null
+                                      ],
+                                      "referencedDeclaration": 223,
+                                      "type": "mapping(uint256 => address)",
+                                      "value": "pirateToOwner"
+                                    },
+                                    "id": 406,
+                                    "name": "Identifier",
+                                    "src": "436:13:3"
+                                  },
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": null,
+                                      "overloadedDeclarations": [
+                                        null
+                                      ],
+                                      "referencedDeclaration": 401,
+                                      "type": "uint256",
+                                      "value": "_pirateId"
+                                    },
+                                    "id": 407,
+                                    "name": "Identifier",
+                                    "src": "450:9:3"
+                                  }
+                                ],
+                                "id": 408,
+                                "name": "IndexAccess",
+                                "src": "436:24:3"
+                              }
+                            ],
+                            "id": 409,
+                            "name": "BinaryOperation",
+                            "src": "422:38:3"
+                          }
+                        ],
+                        "id": 410,
+                        "name": "FunctionCall",
+                        "src": "414:47:3"
+                      }
+                    ],
+                    "id": 411,
+                    "name": "ExpressionStatement",
+                    "src": "414:47:3"
+                  },
+                  {
+                    "id": 412,
+                    "name": "PlaceholderStatement",
+                    "src": "467:1:3"
+                  }
+                ],
+                "id": 413,
+                "name": "Block",
+                "src": "408:65:3"
+              }
+            ],
+            "id": 414,
+            "name": "ModifierDefinition",
+            "src": "371:102:3"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "name": "setPetContractAddress",
+              "scope": 507,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_address",
+                      "scope": 428,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 415,
+                        "name": "ElementaryTypeName",
+                        "src": "508:7:3"
+                      }
+                    ],
+                    "id": 416,
+                    "name": "VariableDeclaration",
+                    "src": "508:16:3"
+                  }
+                ],
+                "id": 417,
+                "name": "ParameterList",
+                "src": "507:18:3"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 420,
+                "name": "ParameterList",
+                "src": "545:0:3"
+              },
+              {
+                "attributes": {
+                  "arguments": null
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "argumentTypes": null,
+                      "overloadedDeclarations": [
+                        null
+                      ],
+                      "referencedDeclaration": 29,
+                      "type": "modifier ()",
+                      "value": "onlyOwner"
+                    },
+                    "id": 418,
+                    "name": "Identifier",
+                    "src": "535:9:3"
+                  }
+                ],
+                "id": 419,
+                "name": "ModifierInvocation",
+                "src": "535:9:3"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "operator": "=",
+                          "type": "contract PetInterface"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 399,
+                              "type": "contract PetInterface",
+                              "value": "petContract"
+                            },
+                            "id": 421,
+                            "name": "Identifier",
+                            "src": "551:11:3"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "isStructConstructorCall": false,
+                              "lValueRequested": false,
+                              "names": [
+                                null
+                              ],
+                              "type": "contract PetInterface",
+                              "type_conversion": true
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": [
+                                    {
+                                      "typeIdentifier": "t_address",
+                                      "typeString": "address"
+                                    }
+                                  ],
+                                  "overloadedDeclarations": [
+                                    null
+                                  ],
+                                  "referencedDeclaration": 395,
+                                  "type": "type(contract PetInterface)",
+                                  "value": "PetInterface"
+                                },
+                                "id": 422,
+                                "name": "Identifier",
+                                "src": "565:12:3"
+                              },
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "overloadedDeclarations": [
+                                    null
+                                  ],
+                                  "referencedDeclaration": 416,
+                                  "type": "address",
+                                  "value": "_address"
+                                },
+                                "id": 423,
+                                "name": "Identifier",
+                                "src": "578:8:3"
+                              }
+                            ],
+                            "id": 424,
+                            "name": "FunctionCall",
+                            "src": "565:22:3"
+                          }
+                        ],
+                        "id": 425,
+                        "name": "Assignment",
+                        "src": "551:36:3"
+                      }
+                    ],
+                    "id": 426,
+                    "name": "ExpressionStatement",
+                    "src": "551:36:3"
+                  }
+                ],
+                "id": 427,
+                "name": "Block",
+                "src": "545:47:3"
+              }
+            ],
+            "id": 428,
+            "name": "FunctionDefinition",
+            "src": "477:115:3"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "_triggerCooldown",
+              "scope": 507,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "internal"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_pirate",
+                      "scope": 444,
+                      "stateVariable": false,
+                      "storageLocation": "storage",
+                      "type": "struct PirateFactory.Pirate",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "contractScope": null,
+                          "name": "Pirate",
+                          "referencedDeclaration": 216,
+                          "type": "struct PirateFactory.Pirate"
+                        },
+                        "id": 429,
+                        "name": "UserDefinedTypeName",
+                        "src": "622:6:3"
+                      }
+                    ],
+                    "id": 430,
+                    "name": "VariableDeclaration",
+                    "src": "622:22:3"
+                  }
+                ],
+                "id": 431,
+                "name": "ParameterList",
+                "src": "621:24:3"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 432,
+                "name": "ParameterList",
+                "src": "655:0:3"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "operator": "=",
+                          "type": "uint32"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "isConstant": false,
+                              "isLValue": true,
+                              "isPure": false,
+                              "lValueRequested": true,
+                              "member_name": "readyTime",
+                              "referencedDeclaration": 211,
+                              "type": "uint32"
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "overloadedDeclarations": [
+                                    null
+                                  ],
+                                  "referencedDeclaration": 430,
+                                  "type": "struct PirateFactory.Pirate storage pointer",
+                                  "value": "_pirate"
+                                },
+                                "id": 433,
+                                "name": "Identifier",
+                                "src": "661:7:3"
+                              }
+                            ],
+                            "id": 435,
+                            "name": "MemberAccess",
+                            "src": "661:17:3"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "isStructConstructorCall": false,
+                              "lValueRequested": false,
+                              "names": [
+                                null
+                              ],
+                              "type": "uint32",
+                              "type_conversion": true
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": [
+                                    {
+                                      "typeIdentifier": "t_uint256",
+                                      "typeString": "uint256"
+                                    }
+                                  ],
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": true,
+                                  "lValueRequested": false,
+                                  "type": "type(uint32)",
+                                  "value": "uint32"
+                                },
+                                "id": 436,
+                                "name": "ElementaryTypeNameExpression",
+                                "src": "681:6:3"
+                              },
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "commonType": {
+                                    "typeIdentifier": "t_uint256",
+                                    "typeString": "uint256"
+                                  },
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "operator": "+",
+                                  "type": "uint256"
+                                },
+                                "children": [
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": null,
+                                      "overloadedDeclarations": [
+                                        null
+                                      ],
+                                      "referencedDeclaration": 949,
+                                      "type": "uint256",
+                                      "value": "now"
+                                    },
+                                    "id": 437,
+                                    "name": "Identifier",
+                                    "src": "688:3:3"
+                                  },
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": null,
+                                      "overloadedDeclarations": [
+                                        null
+                                      ],
+                                      "referencedDeclaration": 203,
+                                      "type": "uint256",
+                                      "value": "cooldownTime"
+                                    },
+                                    "id": 438,
+                                    "name": "Identifier",
+                                    "src": "694:12:3"
+                                  }
+                                ],
+                                "id": 439,
+                                "name": "BinaryOperation",
+                                "src": "688:18:3"
+                              }
+                            ],
+                            "id": 440,
+                            "name": "FunctionCall",
+                            "src": "681:26:3"
+                          }
+                        ],
+                        "id": 441,
+                        "name": "Assignment",
+                        "src": "661:46:3"
+                      }
+                    ],
+                    "id": 442,
+                    "name": "ExpressionStatement",
+                    "src": "661:46:3"
+                  }
+                ],
+                "id": 443,
+                "name": "Block",
+                "src": "655:57:3"
+              }
+            ],
+            "id": 444,
+            "name": "FunctionDefinition",
+            "src": "596:116:3"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "_isReady",
+              "scope": 507,
+              "stateMutability": "view",
+              "superFunction": null,
+              "visibility": "internal"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_pirate",
+                      "scope": 458,
+                      "stateVariable": false,
+                      "storageLocation": "storage",
+                      "type": "struct PirateFactory.Pirate",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "contractScope": null,
+                          "name": "Pirate",
+                          "referencedDeclaration": 216,
+                          "type": "struct PirateFactory.Pirate"
+                        },
+                        "id": 445,
+                        "name": "UserDefinedTypeName",
+                        "src": "734:6:3"
+                      }
+                    ],
+                    "id": 446,
+                    "name": "VariableDeclaration",
+                    "src": "734:22:3"
+                  }
+                ],
+                "id": 447,
+                "name": "ParameterList",
+                "src": "733:24:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "",
+                      "scope": 458,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bool",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bool",
+                          "type": "bool"
+                        },
+                        "id": 448,
+                        "name": "ElementaryTypeName",
+                        "src": "781:4:3"
+                      }
+                    ],
+                    "id": 449,
+                    "name": "VariableDeclaration",
+                    "src": "781:4:3"
+                  }
+                ],
+                "id": 450,
+                "name": "ParameterList",
+                "src": "780:6:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "functionReturnParameters": 450
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isInlineArray": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "type": "bool"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "commonType": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "operator": "<=",
+                              "type": "bool"
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "isConstant": false,
+                                  "isLValue": true,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "member_name": "readyTime",
+                                  "referencedDeclaration": 211,
+                                  "type": "uint32"
+                                },
+                                "children": [
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": null,
+                                      "overloadedDeclarations": [
+                                        null
+                                      ],
+                                      "referencedDeclaration": 446,
+                                      "type": "struct PirateFactory.Pirate storage pointer",
+                                      "value": "_pirate"
+                                    },
+                                    "id": 451,
+                                    "name": "Identifier",
+                                    "src": "803:7:3"
+                                  }
+                                ],
+                                "id": 452,
+                                "name": "MemberAccess",
+                                "src": "803:17:3"
+                              },
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "overloadedDeclarations": [
+                                    null
+                                  ],
+                                  "referencedDeclaration": 949,
+                                  "type": "uint256",
+                                  "value": "now"
+                                },
+                                "id": 453,
+                                "name": "Identifier",
+                                "src": "824:3:3"
+                              }
+                            ],
+                            "id": 454,
+                            "name": "BinaryOperation",
+                            "src": "803:24:3"
+                          }
+                        ],
+                        "id": 455,
+                        "name": "TupleExpression",
+                        "src": "802:26:3"
+                      }
+                    ],
+                    "id": 456,
+                    "name": "Return",
+                    "src": "795:33:3"
+                  }
+                ],
+                "id": 457,
+                "name": "Block",
+                "src": "787:46:3"
+              }
+            ],
+            "id": 458,
+            "name": "FunctionDefinition",
+            "src": "716:117:3"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "name": "stealPirate",
+              "scope": 507,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "internal"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_pirateId",
+                      "scope": 487,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint",
+                          "type": "uint256"
+                        },
+                        "id": 459,
+                        "name": "ElementaryTypeName",
+                        "src": "1212:4:3"
+                      }
+                    ],
+                    "id": 460,
+                    "name": "VariableDeclaration",
+                    "src": "1212:14:3"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_pirateIdEnemy",
+                      "scope": 487,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint",
+                          "type": "uint256"
+                        },
+                        "id": 461,
+                        "name": "ElementaryTypeName",
+                        "src": "1228:4:3"
+                      }
+                    ],
+                    "id": 462,
+                    "name": "VariableDeclaration",
+                    "src": "1228:19:3"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "typeAttack",
+                      "scope": 487,
+                      "stateVariable": false,
+                      "storageLocation": "memory",
+                      "type": "string",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "string",
+                          "type": "string"
+                        },
+                        "id": 463,
+                        "name": "ElementaryTypeName",
+                        "src": "1249:6:3"
+                      }
+                    ],
+                    "id": 464,
+                    "name": "VariableDeclaration",
+                    "src": "1249:24:3"
+                  }
+                ],
+                "id": 465,
+                "name": "ParameterList",
+                "src": "1211:63:3"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 469,
+                "name": "ParameterList",
+                "src": "1307:0:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "argumentTypes": null,
+                      "overloadedDeclarations": [
+                        null
+                      ],
+                      "referencedDeclaration": 414,
+                      "type": "modifier (uint256)",
+                      "value": "onlyOwnerOf"
+                    },
+                    "id": 466,
+                    "name": "Identifier",
+                    "src": "1284:11:3"
+                  },
+                  {
+                    "attributes": {
+                      "argumentTypes": null,
+                      "overloadedDeclarations": [
+                        null
+                      ],
+                      "referencedDeclaration": 460,
+                      "type": "uint256",
+                      "value": "_pirateId"
+                    },
+                    "id": 467,
+                    "name": "Identifier",
+                    "src": "1296:9:3"
+                  }
+                ],
+                "id": 468,
+                "name": "ModifierInvocation",
+                "src": "1284:22:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "assignments": [
+                        471
+                      ]
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "constant": false,
+                          "name": "myPirate",
+                          "scope": 486,
+                          "stateVariable": false,
+                          "storageLocation": "storage",
+                          "type": "struct PirateFactory.Pirate",
+                          "value": null,
+                          "visibility": "internal"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "contractScope": null,
+                              "name": "Pirate",
+                              "referencedDeclaration": 216,
+                              "type": "struct PirateFactory.Pirate"
+                            },
+                            "id": 470,
+                            "name": "UserDefinedTypeName",
+                            "src": "1313:6:3"
+                          }
+                        ],
+                        "id": 471,
+                        "name": "VariableDeclaration",
+                        "src": "1313:23:3"
+                      },
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": true,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "type": "struct PirateFactory.Pirate storage ref"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 219,
+                              "type": "struct PirateFactory.Pirate storage ref[] storage ref",
+                              "value": "pirates"
+                            },
+                            "id": 472,
+                            "name": "Identifier",
+                            "src": "1339:7:3"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 460,
+                              "type": "uint256",
+                              "value": "_pirateId"
+                            },
+                            "id": 473,
+                            "name": "Identifier",
+                            "src": "1347:9:3"
+                          }
+                        ],
+                        "id": 474,
+                        "name": "IndexAccess",
+                        "src": "1339:18:3"
+                      }
+                    ],
+                    "id": 475,
+                    "name": "VariableDeclarationStatement",
+                    "src": "1313:44:3"
+                  },
+                  {
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "isStructConstructorCall": false,
+                          "lValueRequested": false,
+                          "names": [
+                            null
+                          ],
+                          "type": "tuple()",
+                          "type_conversion": false
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_bool",
+                                  "typeString": "bool"
+                                }
+                              ],
+                              "overloadedDeclarations": [
+                                950,
+                                951
+                              ],
+                              "referencedDeclaration": 950,
+                              "type": "function (bool) pure",
+                              "value": "require"
+                            },
+                            "id": 476,
+                            "name": "Identifier",
+                            "src": "1363:7:3"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "isStructConstructorCall": false,
+                              "lValueRequested": false,
+                              "names": [
+                                null
+                              ],
+                              "type": "bool",
+                              "type_conversion": false
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": [
+                                    {
+                                      "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                                      "typeString": "struct PirateFactory.Pirate storage pointer"
+                                    }
+                                  ],
+                                  "overloadedDeclarations": [
+                                    null
+                                  ],
+                                  "referencedDeclaration": 458,
+                                  "type": "function (struct PirateFactory.Pirate storage pointer) view returns (bool)",
+                                  "value": "_isReady"
+                                },
+                                "id": 477,
+                                "name": "Identifier",
+                                "src": "1371:8:3"
+                              },
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "overloadedDeclarations": [
+                                    null
+                                  ],
+                                  "referencedDeclaration": 471,
+                                  "type": "struct PirateFactory.Pirate storage pointer",
+                                  "value": "myPirate"
+                                },
+                                "id": 478,
+                                "name": "Identifier",
+                                "src": "1380:8:3"
+                              }
+                            ],
+                            "id": 479,
+                            "name": "FunctionCall",
+                            "src": "1371:18:3"
+                          }
+                        ],
+                        "id": 480,
+                        "name": "FunctionCall",
+                        "src": "1363:27:3"
+                      }
+                    ],
+                    "id": 481,
+                    "name": "ExpressionStatement",
+                    "src": "1363:27:3"
+                  },
+                  {
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "isStructConstructorCall": false,
+                          "lValueRequested": false,
+                          "names": [
+                            null
+                          ],
+                          "type": "tuple()",
+                          "type_conversion": false
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_struct$_Pirate_$216_storage_ptr",
+                                  "typeString": "struct PirateFactory.Pirate storage pointer"
+                                }
+                              ],
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 444,
+                              "type": "function (struct PirateFactory.Pirate storage pointer)",
+                              "value": "_triggerCooldown"
+                            },
+                            "id": 482,
+                            "name": "Identifier",
+                            "src": "1477:16:3"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 471,
+                              "type": "struct PirateFactory.Pirate storage pointer",
+                              "value": "myPirate"
+                            },
+                            "id": 483,
+                            "name": "Identifier",
+                            "src": "1494:8:3"
+                          }
+                        ],
+                        "id": 484,
+                        "name": "FunctionCall",
+                        "src": "1477:26:3"
+                      }
+                    ],
+                    "id": 485,
+                    "name": "ExpressionStatement",
+                    "src": "1477:26:3"
+                  }
+                ],
+                "id": 486,
+                "name": "Block",
+                "src": "1307:201:3"
+              }
+            ],
+            "id": 487,
+            "name": "FunctionDefinition",
+            "src": "1191:317:3"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "_kiddnapPet",
+              "scope": 507,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "internal"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_pirateId",
+                      "scope": 506,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint",
+                          "type": "uint256"
+                        },
+                        "id": 488,
+                        "name": "ElementaryTypeName",
+                        "src": "1533:4:3"
+                      }
+                    ],
+                    "id": 489,
+                    "name": "VariableDeclaration",
+                    "src": "1533:14:3"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_kittyId",
+                      "scope": 506,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint",
+                          "type": "uint256"
+                        },
+                        "id": 490,
+                        "name": "ElementaryTypeName",
+                        "src": "1549:4:3"
+                      }
+                    ],
+                    "id": 491,
+                    "name": "VariableDeclaration",
+                    "src": "1549:13:3"
+                  }
+                ],
+                "id": 492,
+                "name": "ParameterList",
+                "src": "1532:31:3"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 493,
+                "name": "ParameterList",
+                "src": "1573:0:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "assignments": [
+                        495
+                      ],
+                      "initialValue": null
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "constant": false,
+                          "name": "petDna",
+                          "scope": 505,
+                          "stateVariable": false,
+                          "storageLocation": "default",
+                          "type": "uint256",
+                          "value": null,
+                          "visibility": "internal"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "name": "uint",
+                              "type": "uint256"
+                            },
+                            "id": 494,
+                            "name": "ElementaryTypeName",
+                            "src": "1579:4:3"
+                          }
+                        ],
+                        "id": 495,
+                        "name": "VariableDeclaration",
+                        "src": "1579:11:3"
+                      }
+                    ],
+                    "id": 496,
+                    "name": "VariableDeclarationStatement",
+                    "src": "1579:11:3"
+                  },
+                  {
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "operator": "=",
+                          "type": "tuple()"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "components": [
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                {
+                                  "attributes": {
+                                    "argumentTypes": null,
+                                    "overloadedDeclarations": [
+                                      null
+                                    ],
+                                    "referencedDeclaration": 495,
+                                    "type": "uint256",
+                                    "value": "petDna"
+                                  },
+                                  "id": 497,
+                                  "name": "Identifier",
+                                  "src": "1602:6:3"
+                                }
+                              ],
+                              "isConstant": false,
+                              "isInlineArray": false,
+                              "isLValue": true,
+                              "isPure": false,
+                              "lValueRequested": true,
+                              "type": "tuple(,,,,,uint256)"
+                            },
+                            "id": 498,
+                            "name": "TupleExpression",
+                            "src": "1596:13:3"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "isStructConstructorCall": false,
+                              "lValueRequested": false,
+                              "names": [
+                                null
+                              ],
+                              "type": "tuple(bool,uint256,uint256,uint256,uint256,uint256)",
+                              "type_conversion": false
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": [
+                                    {
+                                      "typeIdentifier": "t_uint256",
+                                      "typeString": "uint256"
+                                    }
+                                  ],
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "member_name": "kidnap",
+                                  "referencedDeclaration": 394,
+                                  "type": "function (uint256) view external returns (bool,uint256,uint256,uint256,uint256,uint256)"
+                                },
+                                "children": [
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": null,
+                                      "overloadedDeclarations": [
+                                        null
+                                      ],
+                                      "referencedDeclaration": 399,
+                                      "type": "contract PetInterface",
+                                      "value": "petContract"
+                                    },
+                                    "id": 499,
+                                    "name": "Identifier",
+                                    "src": "1612:11:3"
+                                  }
+                                ],
+                                "id": 500,
+                                "name": "MemberAccess",
+                                "src": "1612:18:3"
+                              },
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "overloadedDeclarations": [
+                                    null
+                                  ],
+                                  "referencedDeclaration": 491,
+                                  "type": "uint256",
+                                  "value": "_kittyId"
+                                },
+                                "id": 501,
+                                "name": "Identifier",
+                                "src": "1631:8:3"
+                              }
+                            ],
+                            "id": 502,
+                            "name": "FunctionCall",
+                            "src": "1612:28:3"
+                          }
+                        ],
+                        "id": 503,
+                        "name": "Assignment",
+                        "src": "1596:44:3"
+                      }
+                    ],
+                    "id": 504,
+                    "name": "ExpressionStatement",
+                    "src": "1596:44:3"
+                  }
+                ],
+                "id": 505,
+                "name": "Block",
+                "src": "1573:72:3"
+              }
+            ],
+            "id": 506,
+            "name": "FunctionDefinition",
+            "src": "1512:133:3"
+          }
+        ],
+        "id": 507,
+        "name": "ContractDefinition",
+        "src": "297:1350:3"
+      }
+    ],
+    "id": 508,
+    "name": "SourceUnit",
+    "src": "0:1649:3"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.17+commit.d19bba13.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.4",
+  "updatedAt": "2021-03-07T19:42:38.358Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
